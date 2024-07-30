@@ -8,12 +8,23 @@ def register(request):
         username = request.POST['username']
         password = request.POST['password']
         password2 = request.POST['password2']
+        email = request.POST['email']
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
 
         if password == password2:
             if User.objects.filter(username=username).exists():
                 messages.error(request, 'Username already exists')
+            elif User.objects.filter(email=email).exists():
+                messages.error(request, 'Email already exists')
             else:
-                user = User.objects.create_user(username=username, password=password)
+                user = User.objects.create_user(
+                    username=username,
+                    password=password,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name
+                )
                 user.save()
                 login(request, user)
                 return redirect('home')
