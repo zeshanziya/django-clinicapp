@@ -13,6 +13,12 @@
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bookings:calendar' %}">Book Appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bookings:my_bookings' %}">My Bookings</a>
+                    </li>
+                    <li class="nav-item">
                         <span class="navbar-text mr-3">Hello, {{ user.username }}</span>
                     </li>
                     <li class="nav-item">

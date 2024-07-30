@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Cancel Booking</h2>
+    <p>Are you sure you want to cancel your booking for {{ booking.date }} at {{ booking.time }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+        <a href="{% url 'bookings:my_bookings' %}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+{% endblock %}

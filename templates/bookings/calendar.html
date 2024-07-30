@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Calendar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div id="calendar"></div>
+</div>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+<style>
+    .fc-day-grid-event .fc-content {
+        text-align: center;
+        margin: auto;
+        padding: 2px;
+        width: 80%;
+    }
+    .book-now-link {
+        display: inline-block;
+        padding: 5px 10px;
+        margin-top: 5px;
+        font-size: 14px;
+        text-align: center;
+        color: #fff;
+        background-color: #007bff;
+        border-radius: 4px;
+        text-decoration: none;
+        position: relative;
+        top: 45px;
+        left: 33px;
+    }
+    .book-now-link.disabled {
+        background-color: #d3d3d3;
+        pointer-events: none;
+        cursor: default;
+    }
+</style>
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                dayRender: function(date, cell) {
+                    var day = date.day();
+                    if (day !== 0 && day !== 6) { // Exclude Sundays (0) and Saturdays (6)
+                        var today = moment().startOf('day'); // Get today's date
+                        if (date >= today) {
+                            cell.append('<a href="/bookings/' + date.format('YYYY-MM-DD') + '" class="book-now-link">Book Now</a>');
+                        } else {
+                            cell.append('<a href="#" class="book-now-link disabled">Book Now</a>');
+                        }
+                    }
+                },
+                events: [
+
+                ]
+            });
+        });
+    })(jQuery);
+</script>
+{% endblock %}
