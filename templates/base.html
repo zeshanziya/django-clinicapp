@@ -20,6 +20,11 @@
                         <a class="nav-link" href="{% url 'bookings:my_bookings' %}">My Bookings</a>
                     </li>
                     {% endif %}
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/auth/user/">Manage Users</a>
+                        </li>
+                    {% endif %}
                     {% if user.is_staff or user.is_superuser %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'bookings:manage_bookings' %}">Manage Bookings</a>

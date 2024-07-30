@@ -3,8 +3,11 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="jumbotron">
-    <h1 class="display-4">Welcome to Clinic Booking App</h1>
-    <p class="lead">This is the home page.</p>
+<div class="jumbotron text-center">
+    <h1 class="display-4">Welcome to Our Clinic</h1>
+    <p class="lead">We provide the best medical services to take care of your health.</p>
+    <hr class="my-4">
+    <p>Book your appointment now to meet with our specialists.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'bookings:calendar' %}" role="button">Book Your Appointment Now</a>
 </div>
 {% endblock %}
