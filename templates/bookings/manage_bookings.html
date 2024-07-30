@@ -28,17 +28,20 @@
                         <td>{{ booking.date }}</td>
                         <td>{{ booking.time }}</td>
                         <td>{{ booking.booked_at }}</td>
-                        <td>{{ booking.get_status_display }}</td>
                         <td>
-                            {% if booking.status != 'cancelled' %}
-                                <form method="post" action="{% url 'bookings:update_booking_status' booking.id 'confirmed' %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-success btn-sm">Confirm</button>
-                                </form>
-                                <form method="post" action="{% url 'bookings:update_booking_status' booking.id 'cancelled' %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                                </form>
+                            {% if booking.status == 'pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif booking.status == 'confirmed' %}
+                                <span class="badge badge-success">Confirmed</span>
+                            {% elif booking.status == 'cancelled' %}
+                                <span class="badge badge-danger">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if booking.status == 'pending' %}
+                                <a href="{% url 'bookings:update_booking_status' booking.id 'confirmed' %}" class="btn btn-success btn-sm">Confirm</a>
+
+                                <a href="{% url 'bookings:update_booking_status' booking.id 'cancelled' %}" class="btn btn-danger btn-sm">Cancel</a>
                             {% endif %}
                         </td>
                     </tr>

@@ -24,11 +24,17 @@
                         <td>{{ booking.booked_at }}</td>
                         <td>{{ booking.get_status_display }}</td>
                         <td>
+                            {% if booking.status == 'pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif booking.status == 'confirmed' %}
+                                <span class="badge badge-success">Confirmed</span>
+                            {% elif booking.status == 'cancelled' %}
+                                <span class="badge badge-danger">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             {% if booking.status != 'cancelled' %}
-                                <form method="post" action="{% url 'bookings:cancel_booking' booking.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                                </form>
+                                <a href="{% url 'bookings:cancel_booking' booking.id %}" class="btn btn-danger btn-sm">Cancel</a>
                             {% endif %}
                         </td>
                     </tr>

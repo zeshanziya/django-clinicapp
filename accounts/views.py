@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 
 def register(request):
+    next_url = request.GET.get('next', 'home')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -27,10 +28,10 @@ def register(request):
                 )
                 user.save()
                 login(request, user)
-                return redirect('home')
+                return redirect(next_url)
         else:
             messages.error(request, 'Passwords do not match')
-    return render(request, 'accounts/register.html')
+    return render(request, 'accounts/register.html', {'next': next_url})
 
 def login_view(request):
     if request.method == 'POST':
