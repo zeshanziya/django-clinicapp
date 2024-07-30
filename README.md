@@ -13,7 +13,7 @@ This is a Django-based web application for managing clinic appointments. It allo
 
 1. **Clone the repository:**
     ```sh
-    git clone https://github.com/your-username/clinic-booking-system.git
+    git clone https://github.com/zeshanziya/django-clinicapp/
     cd clinic-booking-system
     ```
 
