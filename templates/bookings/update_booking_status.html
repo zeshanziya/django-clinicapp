@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Booking Status{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Update Booking Status</h2>
+    <p>Are you sure you want to {{ status }} this booking for {{ booking.user.username }} on {{ booking.date }} at {{ booking.time }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Yes, {{ status }} it</button>
+        <a href="{% url 'bookings:manage_bookings' %}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+{% endblock %}

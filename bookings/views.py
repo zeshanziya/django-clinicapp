@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Booking
+from django.utils.dateparse import parse_date
 
+@login_required
 def calendar_view(request):
     return render(request, 'bookings/calendar.html')
 
@@ -20,14 +22,19 @@ def booking_slots(request, date):
         ("7:30 PM", "7:30 PM")
     ]
 
+    date_obj = parse_date(date)
+    booked_slots = Booking.objects.filter(date=date_obj).values_list('time', flat=True)
+
     if request.method == 'POST':
         selected_time = request.POST.get('slot')
-        Booking.objects.create(user=request.user, date=date, time=selected_time)
-        return redirect('bookings:booking_confirmation', date=date, time=selected_time)
+        if selected_time not in booked_slots:
+            Booking.objects.create(user=request.user, date=date, time=selected_time)
+            return redirect('bookings:booking_confirmation', date=date, time=selected_time)
 
     context = {
         'date': date,
-        'slots': slots
+        'slots': slots,
+        'booked_slots': booked_slots
     }
     return render(request, 'bookings/slots.html', context)
 
@@ -48,3 +55,22 @@ def cancel_booking(request, booking_id):
         booking.save()
         return redirect('bookings:my_bookings')
     return render(request, 'bookings/cancel_booking.html', {'booking': booking})
+
+def staff_or_superuser(user):
+    return user.is_staff or user.is_superuser
+
+@user_passes_test(staff_or_superuser)
+@login_required
+def manage_bookings(request):
+    bookings = Booking.objects.all().order_by('date', 'time')
+    return render(request, 'bookings/manage_bookings.html', {'bookings': bookings})
+
+@user_passes_test(staff_or_superuser)
+@login_required
+def update_booking_status(request, booking_id, status):
+    booking = get_object_or_404(Booking, id=booking_id)
+    if request.method == 'POST':
+        booking.status = status
+        booking.save()
+        return redirect('bookings:manage_bookings')
+    return render(request, 'bookings/update_booking_status.html', {'booking': booking, 'status': status})
