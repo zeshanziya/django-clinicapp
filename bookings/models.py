@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.mail import send_mail
+from django.conf import settings
 
 class Booking(models.Model):
     STATUS_CHOICES = [
@@ -16,3 +20,28 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.date} at {self.time} ({self.get_status_display()})"
+
+@receiver(post_save, sender=Booking)
+def handle_booking_status_change(sender, instance, **kwargs):
+    if instance.status == 'confirmed':
+        send_confirmation_email(instance)
+    elif instance.status == 'cancelled':
+        send_cancellation_email(instance)
+        instance.delete()
+
+def send_confirmation_email(booking):
+    subject = 'Appointment Confirmation'
+    message = f'Dear {booking.user.username},\n\nYour appointment on {booking.date} at {booking.time} has been confirmed.\n\nThank you!'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [booking.user.email]
+
+    send_mail(subject, message, from_email, recipient_list)
+
+
+def send_cancellation_email(booking):
+    subject = 'Appointment Cancellation'
+    message = f'Dear {booking.user.username},\n\nYour appointment on {booking.date} at {booking.time} has been cancelled.\n\nThank you!'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [booking.user.email]
+
+    send_mail(subject, message, from_email, recipient_list)
