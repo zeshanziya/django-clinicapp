@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Patient Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <h3>{{ patient.username }}</h3>
+            <p><strong>Email:</strong> {{ patient.email }}</p>
+            <p><strong>First Name:</strong> {{ patient.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ patient.last_name }}</p>
+            <p><strong>Problem Description:</strong>
+                {% if problem %}
+                    {{ problem.description }}
+                {% else %}
+                    No problem description
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    <h2 class="text-center">Bookings</h2>
+    <div class="card">
+        <div class="card-body no-padding" style="padding:0">
+            {% if bookings %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Booked At</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            <tr>
+                                <td>{{ booking.date }}</td>
+                                <td>{{ booking.time }}</td>
+                                <td>{{ booking.booked_at }}</td>
+                                <td>{{ booking.get_status_display }}</td>
+                                <td>
+                                    {% if booking.status == 'pending' %}
+                                        <span class="badge badge-warning">Pending</span>
+                                    {% elif booking.status == 'confirmed' %}
+                                        <span class="badge badge-success">Confirmed</span>
+                                    {% elif booking.status == 'cancelled' %}
+                                        <span class="badge badge-danger">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.status != 'cancelled' %}
+                                        <a href="{% url 'bookings:cancel_booking' booking.id %}" class="btn btn-danger btn-sm">Cancel</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-center">This patient has no booking.</p>
+            {% endif %}
+        </div>
+    </div>
+    <a href="{% url 'accounts:patients_list' %}" class="btn btn-secondary mt-3">Back to List</a>
+</div>
+{% endblock %}

@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from .forms import StaffForm
+from .models import Problem  # Import the Problem model
+from bookings.models import Booking
 
 def register(request):
     next_url = request.GET.get('next', 'home')
@@ -14,6 +16,7 @@ def register(request):
             email = form.cleaned_data['email']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
+            problem = form.cleaned_data['problem']
 
             if User.objects.filter(username=username).exists():
                 messages.error(request, 'Username already exists')
@@ -28,6 +31,11 @@ def register(request):
                     last_name=last_name
                 )
                 user.save()
+
+                # Create the Problem instance
+                if problem:
+                    Problem.objects.create(user=user, description=problem)
+
                 login(request, user)
                 return redirect(next_url)
         else:
@@ -95,3 +103,29 @@ def add_staff(request):
         form = StaffForm()
 
     return render(request, 'accounts/add_staff.html', {'form': form})
+
+def list_patients(request):
+    patients = User.objects.filter(is_staff=False).select_related('problem')  # Fetch related Problem data
+    return render(request, 'accounts/patients_list.html', {'patients': patients})
+
+def patient_detail(request, patient_id):
+    patient = get_object_or_404(User, pk=patient_id, is_staff=False)
+    problem = Problem.objects.filter(user=patient).first()  # Fetch related Problem data
+    bookings = Booking.objects.filter(user=patient).order_by('date', 'time')
+    return render(request, 'accounts/patient_detail.html', {'patient': patient, 'problem': problem, 'bookings': bookings})
+
+def delete_patient(request, patient_id):
+    patient = get_object_or_404(User, id=patient_id, is_staff=False)
+
+    # Delete associated problem if exists
+    if hasattr(patient, 'problem'):
+        patient.problem.delete()
+
+    # Delete all bookings associated with the patient
+    Booking.objects.filter(user=patient).delete()
+
+    # Delete the patient
+    patient.delete()
+
+    messages.success(request, 'Patient and associated records have been deleted.')
+    return redirect('accounts:patients_list')

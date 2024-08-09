@@ -3,15 +3,20 @@ from django import forms
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-
+from .models import Problem  # Import the Problem model
 
 class StaffForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, min_length=8)
     password2 = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')
+    problem = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder': 'Describe the problem you are suffering from...', 'rows': 4}),
+        label='Describe Your Problem',
+        required=False  # This field is optional
+    )
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'problem']  # Include 'problem' in fields
 
     def clean(self):
         cleaned_data = super().clean()
@@ -21,6 +26,7 @@ class StaffForm(forms.ModelForm):
         email = cleaned_data.get("email")
         first_name = cleaned_data.get("first_name")
         last_name = cleaned_data.get("last_name")
+        problem = cleaned_data.get("problem")
 
         if password != password2:
             raise forms.ValidationError("Passwords do not match")
@@ -61,4 +67,7 @@ class StaffForm(forms.ModelForm):
             # Assign 'staff' role to the user
             staff_group, created = Group.objects.get_or_create(name='staff')
             user.groups.add(staff_group)
+            # Save the problem description to a separate model if needed
+            problem_description = self.cleaned_data.get('problem', '')
+            Problem.objects.create(user=user, description=problem_description)
         return user

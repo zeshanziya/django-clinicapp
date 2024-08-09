@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Patients List{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Patients List</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Problem Description</th>
+                <th>Actions</th>  <!-- Add Actions column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td>{{ patient.first_name }}</td>
+                <td>{{ patient.last_name }}</td>
+                <td>{{ patient.email }}</td>
+                <td>
+                    {% if patient.problem %}
+                        {{ patient.problem.description }}
+                    {% else %}
+                        No problem description
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'accounts:patient_detail' patient.id %}" class="btn btn-info btn-sm">View Details</a>
+                    <a href="{% url 'accounts:delete_patient' patient.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this patient?');">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No patients found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
