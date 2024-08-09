@@ -11,12 +11,6 @@ This is a Django-based web application for managing clinic appointments. It allo
 
 ### Getting Started
 
-1. **Clone the repository:**
-    ```sh
-    git clone https://github.com/zeshanziya/django-clinicapp/
-    cd clinic-booking-system
-    ```
-
 2. **Create and activate a virtual environment:**
     ```sh
     python -m venv venv
@@ -62,7 +56,3 @@ This is a Django-based web application for managing clinic appointments. It allo
     - Update values as below.
         - `EMAIL_HOST_USER` as your email.
         - `EMAIL_HOST_PASSWORD` as password created in previous step.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
